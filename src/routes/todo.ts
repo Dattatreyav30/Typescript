@@ -1,4 +1,5 @@
 import express, { Router } from 'express';
+import { type } from 'os';
 
 const router = Router();
 
@@ -6,6 +7,8 @@ import { Todo } from '../models/todo'
 
 let todos: Todo[] = []
 
+type RequestBody = { text: string }
+type RequestParams = { todoId: string }
 
 
 router.get('/', (req, res, next) => {
@@ -13,16 +16,18 @@ router.get('/', (req, res, next) => {
 })
 
 router.post('/todo', (req, res, next) => {
+    const body = req.body as RequestBody
     const newTodo: Todo = {
         id: new Date().toISOString(),
-        text: req.body.text
+        text: body.text
     };
     todos.push(newTodo);
     res.status(200).json({ message: 'todo pushed' })
 })
 
 router.put('/todo/:todoId', (req, res, next) => {
-    const tid = req.params.todoId;
+    const params = req.params as RequestParams
+    const tid = params.todoId;
     const todoIndex = todos.findIndex(todosItem => {
         todosItem.id === tid
     })
@@ -36,8 +41,10 @@ router.put('/todo/:todoId', (req, res, next) => {
 })
 
 router.delete('/todos/:todoId', (req, res, next) => {
+    const params = req.params as RequestParams
+    const tid = params.todoId;
     todos.filter((tododItem) => {
-        tododItem.id !== req.params.todoId
+        tododItem.id !== tid
     })
 })
 
